@@ -44,14 +44,22 @@
           <div class="title">常用商品</div>
           <div class="often-food-list">
             <ul>
-              <li>
-                <span>香辣鸡腿堡</span>
-                <span>￥16元</span>
+              <li v-for="goods in oftenFood"
+                  :key="goods.goodsName">
+                <span>{{goods.goodsName}}</span>
+                <span style="color:blue;">{{goods.price}}</span>
               </li>
             </ul>
           </div>
         </div>
-        <div class="all-food"></div>
+        <div class="all-food">
+          <el-tabs>
+            <el-tab-pane label="汉堡">汉堡</el-tab-pane>
+            <el-tab-pane label="小食">小食</el-tab-pane>
+            <el-tab-pane label="饮料">饮料</el-tab-pane>
+            <el-tab-pane label="套餐">套餐</el-tab-pane>
+          </el-tabs>
+        </div>
       </el-col>
     </el-row>
   </div>
@@ -62,13 +70,18 @@
   background-color: #f9f9f9;
   border-right: 1px solid grey;
 }
-.pos-prodaction {
+.all-food {
+  clear: both;
 }
 .div-btn {
   margin-top: 1rem;
 }
 li {
   list-style: none;
+  background-color: grey;
+  float: left;
+  padding: 0.3rem;
+  margin: 0.3rem;
 }
 .title {
   text-align: left;
@@ -99,7 +112,22 @@ export default {
         goodsName: '甜筒',
         price: 8,
         count: 1
-      }]
+      }],
+      oftenFood: [
+        {
+          goodsName: '香辣鸡腿堡',
+          price: 15,
+          count: 1
+        }, {
+          goodsName: '爱心薯条',
+          price: 8,
+          count: 1
+        }, {
+          goodsName: '甜筒',
+          price: 8,
+          count: 1
+        }
+      ]
     }
   },
   mounted: function () { // 更改el-col的高度，使其撑满整个页面
