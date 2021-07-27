@@ -45,7 +45,8 @@
           <div class="often-food-list">
             <ul>
               <li v-for="goods in oftenFood"
-                  :key="goods.goodsName">
+                  :key="goods.goodsName"
+                  @click="addOrder(goods)">
                 <span>{{goods.goodsName}}</span>
                 <span style="color:blue;">{{goods.price}}</span>
               </li>
@@ -54,10 +55,54 @@
         </div>
         <div class="all-food">
           <el-tabs>
-            <el-tab-pane label="汉堡">汉堡</el-tab-pane>
-            <el-tab-pane label="小食">小食</el-tab-pane>
-            <el-tab-pane label="饮料">饮料</el-tab-pane>
-            <el-tab-pane label="套餐">套餐</el-tab-pane>
+            <el-tab-pane label="汉堡">
+              <ul>
+                <li v-for="goods in allFood[0]"
+                    :key="goods.goodsId"
+                    @click="addOrder(goods)">
+                  <span><img :src="goods.goodsImg"
+                         alt="food"></span>
+                  <span>{{goods.goodsName}}</span>
+                  <span>{{goods.price}}</span>
+                </li>
+              </ul>
+            </el-tab-pane>
+            <el-tab-pane label="小食">
+              <ul>
+                <li v-for="goods in allFood[1]"
+                    :key="goods.goodsId"
+                    @click="addOrder(goods)">
+                  <span><img :src="goods.goodsImg"
+                         alt="food"></span>
+                  <span>{{goods.goodsName}}</span>
+                  <span>{{goods.price}}</span>
+                </li>
+              </ul>
+            </el-tab-pane>
+            <el-tab-pane label="饮料">
+              <ul>
+                <li v-for="goods in allFood[2]"
+                    :key="goods.goodsId"
+                    @click="addOrder(goods)">
+                  <span><img :src="goods.goodsImg"
+                         alt="food"></span>
+                  <span>{{goods.goodsName}}</span>
+                  <span>{{goods.price}}</span>
+                </li>
+              </ul>
+            </el-tab-pane>
+            <el-tab-pane label="套餐">
+              <ul>
+                <li v-for="goods in allFood[3]"
+                    :key="goods.goodsId"
+                    @click="addOrder(goods)">
+                  <span><img :src="goods.goodsImg"
+                         alt="food"></span>
+                  <span>{{goods.goodsName}}</span>
+                  <span>{{goods.price}}</span>
+                </li>
+              </ul>
+            </el-tab-pane>
           </el-tabs>
         </div>
       </el-col>
@@ -77,11 +122,13 @@
   margin-top: 1rem;
 }
 li {
+  display: flex;
   list-style: none;
   background-color: grey;
   float: left;
   padding: 0.3rem;
   margin: 0.3rem;
+  align-items: center;
 }
 .title {
   text-align: left;
@@ -89,50 +136,64 @@ li {
   height: 2rem;
   border-bottom: 1px solid grey;
 }
+img {
+  max-width: 5rem;
+}
 </style>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'Pos',
   data () {
     return {
-      tableData: [{
-        goodsName: '可口可乐',
-        price: 8,
-        count: 1
-      }, {
-        goodsName: '香辣鸡腿堡',
-        price: 15,
-        count: 1
-      }, {
-        goodsName: '爱心薯条',
-        price: 8,
-        count: 1
-      }, {
-        goodsName: '甜筒',
-        price: 8,
-        count: 1
-      }],
-      oftenFood: [
-        {
-          goodsName: '香辣鸡腿堡',
-          price: 15,
-          count: 1
-        }, {
-          goodsName: '爱心薯条',
-          price: 8,
-          count: 1
-        }, {
-          goodsName: '甜筒',
-          price: 8,
-          count: 1
-        }
-      ]
+      tableData: [],
+      oftenFood: [],
+      allFood: []
     }
+  },
+  created () { // 向后台请求商品数据
+    axios.get('https://www.fastmock.site/mock/0bf6a5bae7eab8507e44b56191ddff36/vuepos/oftenGoods')
+      .then(Response => {
+        this.oftenFood = Response.data.oftenGoods
+      })
+      .catch(Error => {
+        alert('网络请求失败，请刷新重试！')
+      })
+    axios.get('https://www.fastmock.site/mock/0bf6a5bae7eab8507e44b56191ddff36/vuepos/typeGoods')
+      .then(response => {
+        this.allFood = response.data.data
+      })
+      .catch()
   },
   mounted: function () { // 更改el-col的高度，使其撑满整个页面
     let orderHeight = document.body.clientHeight
     document.querySelector('.pos-order').style.height = orderHeight + 'px'
+  },
+  methods: {
+    addOrder (goods) {
+      let isHave = false
+      for (let i = 0; i < this.tableData.length; i++) {
+        if (this.tableData[i].goodsId === goods.goodsId) {
+          isHave = true
+        }
+      }
+      console.log(isHave)
+      if (isHave) {
+        let arr = this.tableData.filter(item => item.goodsName === goods.goodsName)
+        arr[0].count++
+        console.log(arr)
+      } else {
+        let arr = {
+          'goodsId': goods.goodsId,
+          'goodsName': goods.goodsName,
+          'price': goods.price,
+          'count': 1
+        }
+        this.tableData.push(arr)
+      }
+    }
   }
 }
 </script>
