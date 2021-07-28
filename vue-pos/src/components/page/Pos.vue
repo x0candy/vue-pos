@@ -10,24 +10,30 @@
                       style="width:100%">
               <el-table-column prop="goodsName"
                                label="商品名称"
-                               width="100"></el-table-column>
+                               width="80%"></el-table-column>
               <el-table-column prop="count"
                                label="数量"
-                               width="90"></el-table-column>
+                               width="60"></el-table-column>
               <el-table-column prop="price"
                                label="价格"
-                               width="90"></el-table-column>
+                               width="70"></el-table-column>
               <el-table-column label="操作"
                                width="100"
                                fixed="right">
-                <template>
+                <template slot-scope="scope">
                   <el-button type="text"
-                             size="small">增加</el-button>
+                             size="small"
+                             @click="addOrder(scope.row)">增加</el-button>
                   <el-button type="text"
-                             size="small">删除</el-button>
+                             size="small"
+                             @click="delOrder(scope.row)">删除</el-button>
                 </template>
               </el-table-column>
             </el-table>
+            <div>
+              <small>数量:{{this.totalnum}}</small>
+              <small>总价:{{this.totalmoney}}</small>
+            </div>
             <div class="div-btn">
               <el-button type="warning">挂单</el-button>
               <el-button type="danger">删除</el-button>
@@ -150,7 +156,9 @@ export default {
     return {
       tableData: [],
       oftenFood: [],
-      allFood: []
+      allFood: [],
+      totalnum: 0,
+      totalmoney: 0
     }
   },
   created () { // 向后台请求商品数据
@@ -173,17 +181,17 @@ export default {
   },
   methods: {
     addOrder (goods) {
+      // 判断点单中是否有对应商品
       let isHave = false
       for (let i = 0; i < this.tableData.length; i++) {
         if (this.tableData[i].goodsId === goods.goodsId) {
           isHave = true
         }
       }
-      console.log(isHave)
+      // 向点单中添加商品
       if (isHave) {
         let arr = this.tableData.filter(item => item.goodsName === goods.goodsName)
         arr[0].count++
-        console.log(arr)
       } else {
         let arr = {
           'goodsId': goods.goodsId,
@@ -193,6 +201,25 @@ export default {
         }
         this.tableData.push(arr)
       }
+      // 计算总数和总价
+      this.totalnum = 0
+      this.totalmoney = 0
+      this.tableData.map(item => {
+        this.totalnum += item.count
+        this.totalmoney = item.count * item.price
+      })
+    },
+    // 删除点单中对应商品
+    delOrder (goods) {
+      this.tableData.map((item, index) => {
+        if (item.goodsId === goods.goodsId) {
+          if (--this.tableData[index].count === 0) {
+            this.tableData.splice(index, 1)
+          }
+        }
+      })
+      this.totalmoney -= goods.price
+      this.totalnum--
     }
   }
 }
