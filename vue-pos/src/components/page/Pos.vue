@@ -36,7 +36,8 @@
             </div>
             <div class="div-btn">
               <el-button type="warning">挂单</el-button>
-              <el-button type="danger">删除</el-button>
+              <el-button type="danger"
+                         @click="delAll">删除</el-button>
               <el-button type="success">结账</el-button>
             </div>
           </el-tab-pane>
@@ -206,7 +207,7 @@ export default {
       this.totalmoney = 0
       this.tableData.map(item => {
         this.totalnum += item.count
-        this.totalmoney = item.count * item.price
+        this.totalmoney += item.count * item.price
       })
     },
     // 删除点单中对应商品
@@ -220,7 +221,13 @@ export default {
       })
       this.totalmoney -= goods.price
       this.totalnum--
+    },
+    delAll () {
+      this.tableData = []
+      this.totalnum = 0
+      this.totalmoney = 0
     }
   }
+
 }
 </script>
